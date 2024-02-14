@@ -22,53 +22,29 @@ function TodoApp() {
   const toggleUpdate = () => setModal(!modal); //to toggle the visibility of modal for updation
   const toggleDelete = () => setModalDelete(!modalDelete); //to toggle the visibility of modal for deletion
 
-  const addTodo = () => {
-    //   if (!todoInput.trim() || !todoDescription.trim() || !selectedDate ) {
-    //  //if a user leaves any i/p field empty, a msg will appear
-    //  //!todoInput.trim() means if empty spaces are not removed
-    //  // !selectedDate means if selectedDate is null, undefined, or an empty string
+  const addTodo = (e) => {
 
-    //     setShowError(true);
-    //       return;
-    // }
-    // setShowError(false);
-    try {
-      if (!todoInput.trim()) {
-        //if field is empty?
-
-        //if a user leaves any i/p field empty, a msg will appear
-        //!todoInput.trim() means if empty spaces are not removed
-
-        setShowNameError(true);
-        return;
+    // Get the form and its input fields
+    e.preventDefault();
+    const form = document.getElementById("todoForm");
+    const inputs = form.getElementsByTagName("input");
+    
+    // Check if any input field is empty
+    let isEmpty = false;
+    for (let i = 0; i < inputs.length; i++) {
+      if (inputs[i].value.trim() === "") {
+        isEmpty = true;
+        break;
       }
-      setShowNameError(false); //clear error
-
-      if (!todoDescription.trim()) {
-        //if field is empty?
-        setShowDescError(true);
-        return;
-      }
-      setShowDescError(false);
-
-      if (!selectedDate) {
-        //if field is empty?
-        // !selectedDate means if selectedDate is null, undefined, or an empty string
-        setShowDateError(true);
-        return;
-      }
-
-      setShowDateError(false);
-    } catch (error) {
-      console.log(error);
     }
-
-    if (selectedDate < new Date()) {
-      //past date not allowed
-      return window.alert("Can't set previous date!");
+  
+    if (isEmpty) {
+      form.reportValidity();
+      return;
     }
-
+  
     //adding a new todo object to the existing array
+    
     setTodos([
       ...todos,
       {
@@ -126,20 +102,22 @@ function TodoApp() {
 
   return (
     <div className="container w-[100%] h-full mx-0  bg-cyan-300 p-4">
-      <h1 className="text-3xl text-center mb-4">Todo App</h1>
-      <div className="flex flex-col md:flex-row gap-4 mb-4">
+      <h1 className="mb-4 text-3xl text-center">Todo App</h1>
+      <form action="" id="todoForm" onSubmit={(e) =>  addTodo(e)}>
+      <div className="flex flex-col gap-4 mb-4 md:flex-row">
         <div className="flex flex-col">
           <p>Name:</p>
           <input
             type="text"
             placeholder="Task"
             value={todoInput}
+            required
             // setting task name
             onChange={(e) => setTodoInput(e.target.value)}
             className="p-2 mr-2 border rounded"
           />
           {showNameError && (
-            <span className="block w-full p-2 border bg-white border-gray-300 rounded-md focus:outline-none focus:border-blue-500 text-red-600">
+            <span className="block w-full p-2 text-red-600 bg-white border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
               Please fill in the input field
             </span>
           )}{" "}
@@ -151,12 +129,13 @@ function TodoApp() {
             type="text"
             placeholder="Description"
             value={todoDescription}
+            required
             //setting desc
             onChange={(e) => setTodoDescription(e.target.value)}
             className="p-2 mr-2 border rounded"
           />
           {showDescError && (
-            <span className="block bg-white w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 text-red-600">
+            <span className="block w-full p-2 text-red-600 bg-white border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
               Please fill in the input field
             </span>
           )}
@@ -171,21 +150,24 @@ function TodoApp() {
             dateFormat="dd-MM-yyyy"
             placeholderText="Select Date"
             className="p-2 border rounded"
+            required
           />
           {showDateError && (
-            <span className="block w-full bg-white p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500  text-red-600">
+            <span className="block w-full p-2 text-red-600 bg-white border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
               Please fill in the input field
             </span>
           )}{" "}
         </div>
         <button
-          onClick={addTodo}
-          disabled={!todoInput.trim() || !selectedDate} //disabled when any i/p field is empty
-          className="bg-rose-400 text-white p-1 ml-2 h-11 rounded"
+          type='submit'
+          // disabled={!todoInput.trim() || !selectedDate} //disabled when any i/p field is empty
+          className="p-1 ml-2 text-white rounded bg-rose-400 h-11"
         >
           Add Todo
         </button>
       </div>
+        
+      </form>
 
       <ul>
         <div className="flex flex-col justify-evenly gap-9">
@@ -208,7 +190,7 @@ function TodoApp() {
 
               {/* .toLocaleDateString() converts a Date object into a string */}
               {todo.date && <p>Due Date: {todo.date.toLocaleDateString()}</p>}
-              <div className="flex flex-col md:flex-row gap-2 ">
+              <div className="flex flex-col gap-2 md:flex-row ">
                 {/* when clicked, triggers the deleteTodo function with the current index as an argument. This function removes the corresponding task from the todos array. */}
                 <button
                   onClick={() => {
@@ -218,13 +200,15 @@ function TodoApp() {
                     // setSelectedDate(todo.date); //pre-filling the currently set date
                     toggleDelete(); //toggling the popup visibility=true
                   }}
-                  className="bg-red-500 text-white px-1 w-auto py-1 mr-2 rounded"
+                  className="w-auto px-1 py-1 mr-2 text-white bg-red-500 rounded"
                 >
                   Delete
                 </button>
 
                 {/* When edit button is clicked, this button prepares the edit form(popup) by setting the index of the task to be edited (setEditIndex) */}
                 <button
+                  // Comment By Abrar ****************************************************
+                  // yahana aap aik hee function bnakr ye sarey functions call krwa sakti thi, parameters k through data sari jati us aik function main and phir uskey andar ye sare functions call horhe hote
                   onClick={() => {
                     setEditIndex(index); //index of task to be edited
                     setEditValue(todo.text); //pre-filling the task's current value
@@ -232,13 +216,13 @@ function TodoApp() {
                     setSelectedDate(todo.date); //pre-filling the currently set date
                     toggleUpdate(); //toggling the popup visibility=true
                   }}
-                  className="bg-yellow-500 text-white px-4 py-1 mr-2 rounded"
+                  className="px-4 py-1 mr-2 text-white bg-yellow-500 rounded"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => completeTodo(index)}
-                  className="bg-green-500 text-white px-4 py-1 rounded"
+                  className="px-4 py-1 text-white bg-green-500 rounded"
                 >
                   {todo.completed ? "undo" : "Completed"}
                 </button>
@@ -258,7 +242,7 @@ function TodoApp() {
               placeholder="Task"
               value={editValue}
               onChange={(e) => setEditValue(e.target.value)}
-              className="p-2 mb-2 border rounded w-full"
+              className="w-full p-2 mb-2 border rounded"
             />
           </div>
 
@@ -269,7 +253,7 @@ function TodoApp() {
               placeholder="Description"
               value={editDescription}
               onChange={(e) => setEditDescription(e.target.value)}
-              className="p-2 mb-2 border rounded w-full"
+              className="w-full p-2 mb-2 border rounded"
             />
           </div>
 
@@ -280,7 +264,7 @@ function TodoApp() {
               onChange={(date) => setSelectedDate(date)}
               dateFormat="yyyy-MM-dd"
               placeholderText="Select Date"
-              className="p-2 border rounded w-full"
+              className="w-full p-2 border rounded"
             />
           </div>
         </ModalBody>
@@ -315,7 +299,3 @@ function TodoApp() {
 }
 
 export default TodoApp;
-// const [modal, setModal] = useState(false);
-// const toggle = () => {
-// setModal(!modal);
-// };
