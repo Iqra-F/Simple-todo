@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -13,14 +13,17 @@ function TodoApp() {
   const [selectedDate, setSelectedDate] = useState(null); //input field to select a date
   const [modal, setModal] = useState(false); //to manage the visibility of modal for updation
   const [modalDelete, setModalDelete] = useState(false); //to manage the visibility of modal for deletion
-  const [showNameError, setShowNameError] = useState(false);
-  const [showDescError, setShowDescError] = useState(false);
-  const [showDateError, setShowDateError] = useState(false);
+  const [emptyTodoText, setEmptyTodoText] = useState(false)
 
   // const [showError, setShowError] = useState(false)
 
   const toggleUpdate = () => setModal(!modal); //to toggle the visibility of modal for updation
   const toggleDelete = () => setModalDelete(!modalDelete); //to toggle the visibility of modal for deletion
+
+  //Check if todos array is empty and set emptyTodoText state accordingly
+  useEffect(() => {
+    setEmptyTodoText(todos.length === 0);
+  }, [todos]);
 
   const addTodo = (e) => {
 
@@ -29,6 +32,9 @@ function TodoApp() {
     const form = document.getElementById("todoForm");
     const inputs = form.getElementsByTagName("input");
     
+   
+    
+  
     // Check if any input field is empty
     let isEmpty = false;
     for (let i = 0; i < inputs.length; i++) {
@@ -42,6 +48,7 @@ function TodoApp() {
       form.reportValidity();
       return;
     }
+    
   
     //adding a new todo object to the existing array
     
@@ -58,6 +65,18 @@ function TodoApp() {
     setTodoInput("");
     setTodoDescription("");
     setSelectedDate(null);
+  };
+  //settinhg values
+  const setValues =(  ind,
+  val,
+  desc,
+  date 
+  )=>{
+    setEditIndex(ind)
+    setEditValue(val)
+    setEditDescription(desc)
+    setSelectedDate(date)
+    toggleUpdate()
   };
   //delete function
   const deleteTodo = (index) => {
@@ -101,12 +120,13 @@ function TodoApp() {
   };
 
   return (
-    <div className="container w-[100%] h-full mx-0  bg-cyan-300 p-4">
-      <h1 className="mb-4 text-3xl text-center">Todo App</h1>
+    <div className="container min-h-screen w-screen bg-black p-4">
+      <h1 className="mb-4 text-center font-extrabold text-white text-5xl">Todo App</h1>
+      <div className="bg-teal-700 flex w-full justify-evenly  p-5">
       <form action="" id="todoForm" onSubmit={(e) =>  addTodo(e)}>
       <div className="flex flex-col gap-4 mb-4 md:flex-row">
         <div className="flex flex-col">
-          <p>Name:</p>
+          <p className="font-bold">Name:</p>
           <input
             type="text"
             placeholder="Task"
@@ -116,15 +136,15 @@ function TodoApp() {
             onChange={(e) => setTodoInput(e.target.value)}
             className="p-2 mr-2 border rounded"
           />
-          {showNameError && (
+          {/* {showNameError && (
             <span className="block w-full p-2 text-red-600 bg-white border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
               Please fill in the input field
             </span>
-          )}{" "}
+          )}{" "} */}
         </div>
 
         <div className="flex flex-col">
-          <p>Description:</p>
+          <p className="font-bold">Description:</p>
           <input
             type="text"
             placeholder="Description"
@@ -134,15 +154,15 @@ function TodoApp() {
             onChange={(e) => setTodoDescription(e.target.value)}
             className="p-2 mr-2 border rounded"
           />
-          {showDescError && (
+          {/* {showDescError && (
             <span className="block w-full p-2 text-red-600 bg-white border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
               Please fill in the input field
             </span>
-          )}
+          )} */}
         </div>
 
         <div className="flex flex-col">
-          <p>Date:</p>
+          <p className="font-bold">Date:</p>
           {/* setting a due date */}
           <DatePicker
             selected={selectedDate}
@@ -152,55 +172,62 @@ function TodoApp() {
             className="p-2 border rounded"
             required
           />
-          {showDateError && (
+          {/* {showDateError && (
             <span className="block w-full p-2 text-red-600 bg-white border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
               Please fill in the input field
             </span>
-          )}{" "}
+          )}{" "} */}
         </div>
         <button
           type='submit'
           // disabled={!todoInput.trim() || !selectedDate} //disabled when any i/p field is empty
-          className="p-1 ml-2 text-white rounded bg-rose-400 h-11"
+          className="p-2 mx-2 my-4 text-white rounded font-bold bg-slate-950 "
         >
           Add Todo
         </button>
       </div>
         
       </form>
+      </div>
+      <div className="bg-teal-700 flex w-full justify-around p-2 mt-4">
+      <ul id="List">
 
-      <ul>
-        <div className="flex flex-col justify-evenly gap-9">
+        {/* Check if the list is empty or contains items, then display text accordingly*/}
+        <div className="bg-black  my-4 block p-7 text-white">
+        {emptyTodoText ? (<p className=" text-white font-extrabold  text-5xl">Empty Todo</p>) : <p className="text-white font-extrabold   text-5xl">Added Todos</p>}
+        </div>
+
+       
           {/* iterating over the todos array, 'todo' is one item and 'index' is its index  */}
           {todos.map((todo, index) => (
+            <div className="bg-neutral-900 text-white my-3 flex gap-10 w-full p-5">
             <li key={index} className="mb-2">
+              <div className="flex flex-col text-2xl gap-3 ">
               {/* todo.completed ? when task completed, this classname applies a line-through style to the text*/}
 
-              <strong className={todo.completed ? "line-through" : ""}>
-                {todo.text}
+              <strong className={` text-xl font-bold ${todo.completed ? "line-through" : ""}`}>
+               Task name: {todo.text}
               </strong>
 
               {/* If todo.description exists and is not empty, the expression after && is evaluated. */}
 
               {todo.description && (
-                <p className={todo.completed ? "line-through" : ""}>
-                  {todo.description}
+                <p className={`text-sm font-bold ${todo.completed ? "line-through" : ""}`}>
+                  Description: {todo.description}
                 </p>
               )}
 
               {/* .toLocaleDateString() converts a Date object into a string */}
-              {todo.date && <p>Due Date: {todo.date.toLocaleDateString()}</p>}
-              <div className="flex flex-col gap-2 md:flex-row ">
+              {todo.date && <p className="text-xs font-bold">Due Date: {todo.date.toLocaleDateString()}</p>}
+              </div>
+              <div className="flex flex-col mt-2 gap-2 md:flex-row ">
                 {/* when clicked, triggers the deleteTodo function with the current index as an argument. This function removes the corresponding task from the todos array. */}
                 <button
                   onClick={() => {
-                    // setEditIndex(index); //index of task to be edited
-                    // setEditValue(todo.text); //pre-filling the task's current value
-                    // setEditDescription(todo.description); //pre-filling the task's current desc
-                    // setSelectedDate(todo.date); //pre-filling the currently set date
+                   
                     toggleDelete(); //toggling the popup visibility=true
                   }}
-                  className="w-auto px-1 py-1 mr-2 text-white bg-red-500 rounded"
+                  className="w-auto px-2 py-1 mr-1 text-sm rounded text-white bg-teal-700"
                 >
                   Delete
                 </button>
@@ -209,28 +236,31 @@ function TodoApp() {
                 <button
                   // Comment By Abrar ****************************************************
                   // yahana aap aik hee function bnakr ye sarey functions call krwa sakti thi, parameters k through data sari jati us aik function main and phir uskey andar ye sare functions call horhe hote
-                  onClick={() => {
-                    setEditIndex(index); //index of task to be edited
-                    setEditValue(todo.text); //pre-filling the task's current value
-                    setEditDescription(todo.description); //pre-filling the task's current desc
-                    setSelectedDate(todo.date); //pre-filling the currently set date
-                    toggleUpdate(); //toggling the popup visibility=true
-                  }}
-                  className="px-4 py-1 mr-2 text-white bg-yellow-500 rounded"
+                  onClick={() => (
+                    // setEditIndex(index); //index of task to be edited
+                    // setEditValue(todo.text); //pre-filling the task's current value
+                    // setEditDescription(todo.description); //pre-filling the task's current desc
+                    // setSelectedDate(todo.date); //pre-filling the currently set date
+                    // toggleUpdate(); //toggling the popup visibility=true
+                    setValues(index,todo.text,todo.description, todo.date))
+                  }
+                  className="px-2 py-1 mr-1 text-white text-sm bg-teal-700 rounded"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => completeTodo(index)}
-                  className="px-4 py-1 text-white bg-green-500 rounded"
+                  className="px-1 py-1 text-white text-sm bg-teal-700 rounded"
                 >
                   {todo.completed ? "undo" : "Completed"}
                 </button>
               </div>
             </li>
+            </div>
           ))}
-        </div>
+        
       </ul>
+      </div>
 
       {/* popup for updation */}
       <Modal className="mt-6" isOpen={modal} toggle={toggleUpdate}>
