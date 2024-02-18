@@ -120,9 +120,9 @@ function TodoApp() {
   };
 
   return (
-    <div className="container min-h-screen w-screen bg-black p-4">
-      <h1 className="mb-4 text-center font-extrabold text-white text-5xl">Todo App</h1>
-      <div className="bg-teal-700 flex w-full justify-evenly  p-5">
+    <div className="w-full min-h-screen p-4 bg-black c">
+      <h1 className="mb-4 text-5xl font-extrabold text-center text-white">Todo App</h1>
+      <div className="flex w-full p-5 bg-teal-700 justify-evenly">
       <form action="" id="todoForm" onSubmit={(e) =>  addTodo(e)}>
       <div className="flex flex-col gap-4 mb-4 md:flex-row">
         <div className="flex flex-col">
@@ -181,7 +181,7 @@ function TodoApp() {
         <button
           type='submit'
           // disabled={!todoInput.trim() || !selectedDate} //disabled when any i/p field is empty
-          className="p-2 mx-2 my-4 text-white rounded font-bold bg-slate-950 "
+          className="p-2 mx-2 my-4 font-bold text-white rounded bg-slate-950 "
         >
           Add Todo
         </button>
@@ -189,20 +189,20 @@ function TodoApp() {
         
       </form>
       </div>
-      <div className="bg-teal-700 flex w-full justify-around p-2 mt-4">
+      <div className="flex justify-around w-full p-2 mt-4 bg-teal-700">
       <ul id="List">
 
         {/* Check if the list is empty or contains items, then display text accordingly*/}
-        <div className="bg-black  my-4 block p-7 text-white">
-        {emptyTodoText ? (<p className=" text-white font-extrabold  text-5xl">Empty Todo</p>) : <p className="text-white font-extrabold   text-5xl">Added Todos</p>}
+        <div className="block my-4 text-white bg-black p-7">
+        {emptyTodoText ? (<p className="text-5xl font-extrabold text-white ">Empty Todo</p>) : <p className="text-5xl font-extrabold text-white">Added Todos</p>}
         </div>
 
        
           {/* iterating over the todos array, 'todo' is one item and 'index' is its index  */}
           {todos.map((todo, index) => (
-            <div className="bg-neutral-900 text-white my-3 flex gap-10 w-full p-5">
+            <div className="flex w-full gap-10 p-5 my-3 text-white bg-neutral-900">
             <li key={index} className="mb-2">
-              <div className="flex flex-col text-2xl gap-3 ">
+              <div className="flex flex-col gap-3 text-2xl ">
               {/* todo.completed ? when task completed, this classname applies a line-through style to the text*/}
 
               <strong className={` text-xl font-bold ${todo.completed ? "line-through" : ""}`}>
@@ -220,22 +220,20 @@ function TodoApp() {
               {/* .toLocaleDateString() converts a Date object into a string */}
               {todo.date && <p className="text-xs font-bold">Due Date: {todo.date.toLocaleDateString()}</p>}
               </div>
-              <div className="flex flex-col mt-2 gap-2 md:flex-row ">
+              <div className="flex flex-col gap-2 mt-2 md:flex-row ">
                 {/* when clicked, triggers the deleteTodo function with the current index as an argument. This function removes the corresponding task from the todos array. */}
                 <button
                   onClick={() => {
                    
                     toggleDelete(); //toggling the popup visibility=true
                   }}
-                  className="w-auto px-2 py-1 mr-1 text-sm rounded text-white bg-teal-700"
+                  className="w-auto px-2 py-1 mr-1 text-sm text-white bg-teal-700 rounded"
                 >
                   Delete
                 </button>
 
                 {/* When edit button is clicked, this button prepares the edit form(popup) by setting the index of the task to be edited (setEditIndex) */}
                 <button
-                  // Comment By Abrar ****************************************************
-                  // yahana aap aik hee function bnakr ye sarey functions call krwa sakti thi, parameters k through data sari jati us aik function main and phir uskey andar ye sare functions call horhe hote
                   onClick={() => (
                     // setEditIndex(index); //index of task to be edited
                     // setEditValue(todo.text); //pre-filling the task's current value
@@ -244,13 +242,13 @@ function TodoApp() {
                     // toggleUpdate(); //toggling the popup visibility=true
                     setValues(index,todo.text,todo.description, todo.date))
                   }
-                  className="px-2 py-1 mr-1 text-white text-sm bg-teal-700 rounded"
+                  className="px-2 py-1 mr-1 text-sm text-white bg-teal-700 rounded"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => completeTodo(index)}
-                  className="px-1 py-1 text-white text-sm bg-teal-700 rounded"
+                  className="px-1 py-1 text-sm text-white bg-teal-700 rounded"
                 >
                   {todo.completed ? "undo" : "Completed"}
                 </button>
